@@ -33,6 +33,17 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# dados locais (sincronização da Marketing API, config e token do pixel do
+# redirect de WhatsApp) — nunca devem ser commitados
+/data
+
+# relatórios gerados (contêm números reais de gasto/receita/ROAS da conta) —
+# saída local do script generate-report, nunca deve ir pro repositório
+/reports
+
+# permissões locais do Claude Code (pessoal, não compartilhado com o time)
+.claude/settings.local.json
+
 # vercel
 .vercel
 

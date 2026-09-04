@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers, cookies } from "next/headers";
 import { after } from "next/server";
 import { pickNextActiveNumber, getConfig } from "@/lib/redirect/store";
@@ -5,6 +6,11 @@ import { sendCapiEvent, buildFbc } from "@/lib/redirect/capi";
 
 // Escolhe o próximo número em rodízio a cada acesso — nunca cachear/prerenderizar.
 export const dynamic = "force-dynamic";
+
+// Página pública — não deve exibir o título/branding do dashboard interno.
+export const metadata: Metadata = {
+  title: "Continuar no WhatsApp",
+};
 
 export default async function WhatsappRoundRobinPage(props: PageProps<"/r">) {
   const searchParams = await props.searchParams;

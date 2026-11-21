@@ -1,0 +1,283 @@
+<title>Diagnóstico DataCrazy</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #ffffff;
+    --surface-2: #f3eef8;
+    --border: #e6e0da;
+    --text: #2a2420;
+    --text-dim: #6b6259;
+    --accent: #8b6bb8;
+    --accent-dim: #6b4f94;
+    --accent-soft: #ede7f6;
+    --good: #3f7d58;
+    --good-soft: #e5f2ea;
+    --warn: #a86a2d;
+    --warn-soft: #f7ecdd;
+    --pending: #7d7568;
+    --pending-soft: #eeece7;
+    --shadow: 0 1px 2px rgba(42,36,32,0.04), 0 4px 16px rgba(42,36,32,0.05);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #1a1714;
+      --surface: #232019;
+      --surface-2: #2c2620;
+      --border: #3a352c;
+      --text: #f0ebe3;
+      --text-dim: #a89e90;
+      --accent: #b39ddb;
+      --accent-dim: #d3c2ec;
+      --accent-soft: #362c47;
+      --good: #7fc79a;
+      --good-soft: #1f3327;
+      --warn: #e0a860;
+      --warn-soft: #3a2e1a;
+      --pending: #a89e90;
+      --pending-soft: #2f2b24;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.35);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1a1714;
+    --surface: #232019;
+    --surface-2: #2c2620;
+    --border: #3a352c;
+    --text: #f0ebe3;
+    --text-dim: #a89e90;
+    --accent: #b39ddb;
+    --accent-dim: #d3c2ec;
+    --accent-soft: #362c47;
+    --good: #7fc79a;
+    --good-soft: #1f3327;
+    --warn: #e0a860;
+    --warn-soft: #3a2e1a;
+    --pending: #a89e90;
+    --pending-soft: #2f2b24;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.35);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    padding: 28px 16px 56px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+  header { display: flex; flex-direction: column; gap: 6px; }
+  .eyebrow {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent-dim);
+  }
+  h1 { font-family: "Fraunces", Georgia, serif; font-size: 28px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .subtitle { color: var(--text-dim); font-size: 14px; max-width: 640px; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .card .label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+  .card .value { font-family: "Fraunces", Georgia, serif; font-size: 30px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .card .hint { font-size: 12px; color: var(--text-dim); }
+  .card.pending .value { color: var(--pending); }
+  .card.good .value { color: var(--good); }
+
+  section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; box-shadow: var(--shadow); }
+  section h2 { font-size: 15px; margin: 0 0 4px; font-weight: 650; }
+  section .desc { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; }
+
+  .bars { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: grid; grid-template-columns: 190px 1fr 46px; align-items: center; gap: 10px; font-size: 13px; }
+  .bar-row .name { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { background: var(--surface-2); border-radius: 6px; height: 18px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 6px; background: var(--accent); }
+  .bar-fill.strict { background: var(--good); }
+  .bar-row .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-dim); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--text-dim); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .table-scroll { overflow-x: auto; }
+  tr:last-child td { border-bottom: none; }
+  .pill {
+    display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  }
+  .pill.pending { background: var(--pending-soft); color: var(--pending); }
+  .pill.good { background: var(--good-soft); color: var(--good); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+
+  .findings { display: flex; flex-direction: column; gap: 14px; }
+  .finding { display: grid; grid-template-columns: 22px 1fr; gap: 10px; }
+  .finding .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-top: 6px; }
+  .finding .dot.warn { background: var(--warn); }
+  .finding .dot.pending { background: var(--pending); }
+  .finding b { font-weight: 650; }
+  .finding p { margin: 2px 0 0; font-size: 13.5px; color: var(--text-dim); }
+  code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+  footer { font-size: 12px; color: var(--text-dim); text-align: center; padding-top: 8px; }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Fase 1 · Diagnóstico do MCP</span>
+    <h1>Pedidos agendados — DataCrazy, agosto/2026</h1>
+    <p class="subtitle">Dados reais extraídos via API da DataCrazy (o "MCP" do projeto). Esta é a leitura do que foi encontrado até agora — antes de construir o pipeline completo e o dashboard final.</p>
+  </header>
+
+  <div class="cards">
+    <div class="card">
+      <span class="label">Negócios com a tag</span>
+      <span class="value">106</span>
+      <span class="hint">"Pedido Agendado" movidos em agosto</span>
+    </div>
+    <div class="card good">
+      <span class="label">Estágio "Agendado" (estrito)</span>
+      <span class="value">25</span>
+      <span class="hint">nosso conjunto de análise inicial</span>
+    </div>
+    <div class="card pending">
+      <span class="label">Conversa mapeada</span>
+      <span class="value">10 / 25</span>
+      <span class="hint">processo pausado antes de concluir</span>
+    </div>
+    <div class="card pending">
+      <span class="label">Dor classificada</span>
+      <span class="value">0 / 25</span>
+      <span class="hint">aguardando confirmação para iniciar</span>
+    </div>
+    <div class="card pending">
+      <span class="label">UTM/atribuição verificada</span>
+      <span class="value">1 / 25</span>
+      <span class="hint">confirmado: ctwaId + sourceId (sem utm_content)</span>
+    </div>
+  </div>
+
+  <section>
+    <h2>Distribuição por estágio (106 negócios com a tag, agosto/2026)</h2>
+    <div class="desc">Onde os pedidos tocados pela tag "Pedido Agendado" estão hoje. A maior parte já avançou (Postado) ou recuou (Não Confirmou o Termo).</div>
+    <div class="bars" id="bars"></div>
+  </section>
+
+  <section>
+    <h2>Os 25 pedidos em "Afterpay :: Agendado" hoje</h2>
+    <div class="desc">Campos reais retornados pela API (nome, telefone, produto, valor, vendedor, datas). Colunas de dor e UTM aparecem como <span class="pill pending">pendente</span> até a próxima etapa.</div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th><th>Cliente</th><th>Telefone</th><th>Produto</th>
+            <th class="num">Valor</th><th>Vendedor</th><th>Criado</th><th>Agendado em</th><th>Dor</th><th>UTM</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Principais achados da descoberta</h2>
+    <div class="findings">
+      <div class="finding">
+        <div class="dot"></div>
+        <div><b>Paginação real é <code>skip</code>/<code>take</code></b>, não <code>limit</code>/<code>offset</code>.
+        <p>E os filtros vão em notação de colchetes: <code>filter[lastMovedAfter]=...</code>. Sem isso os filtros eram silenciosamente ignorados pela API.</p></div>
+      </div>
+      <div class="finding">
+        <div class="dot"></div>
+        <div><b>"Agendado" é um estágio de pipeline, não um campo de status</b>
+        <p><code>stage.name = "Agendado"</code> dentro do pipeline <code>"Afterpay"</code>, reforçado pela tag <code>"Pedido Agendado"</code> no lead. O campo genérico <code>status</code> só tem won/in_process/lost — dimensão separada.</p></div>
+      </div>
+      <div class="finding">
+        <div class="dot warn"></div>
+        <div><b>Não existem utm_source/utm_campaign/utm_content tradicionais</b>
+        <p>A atribuição real é via Click-to-WhatsApp da Meta: <code>lead.sourceReferral.ctwaId</code> + <code>sourceId</code> (ID do anúncio). Resolver isso para "nome do criativo" exigiria cruzar com a Meta Ads API — fora do escopo da DataCrazy.</p></div>
+      </div>
+      <div class="finding">
+        <div class="dot pending"></div>
+        <div><b>Não há endpoint "conversas do lead X"</b>
+        <p>O vínculo é por telefone (<code>conversation.contact.contactId</code> ↔ <code>lead.phone</code>), filtrando conversas por tag/estágio e paginando — mas a ordenação é por mensagem mais recente em toda a história, não só agosto. Faltavam 15 de 25 quando o processo foi interrompido.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Dados: API DataCrazy (api.g1.datacrazy.io) · tenant Menocare · gerado a partir de tracking-platform/scripts/discovery/</footer>
+</div>
+
+<script>
+  const stages = [
+    ["Afterpay :: Postado", 32, false],
+    ["Afterpay :: Agendado", 25, true],
+    ["Funil | Vendas :: Não Confirmou o Termo", 20, false],
+    ["Antecipado :: Pago e Entregue", 8, false],
+    ["Afterpay :: Pago", 6, false],
+    ["Afterpay :: Entregue", 5, false],
+    ["Funil | Vendas :: Respondeu Parte 4", 4, false],
+    ["Funil | Vendas :: Parte 1", 2, false],
+    ["Afterpay :: Aguardando Retirada", 2, false],
+    ["Funil | Vendas :: Parte 3", 1, false],
+    ["Funil | Vendas :: Parte 4", 1, false],
+  ];
+  const max = Math.max(...stages.map(s => s[1]));
+  const barsEl = document.getElementById("bars");
+  for (const [name, n, strict] of stages) {
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    row.innerHTML = `
+      <span class="name">${name}</span>
+      <span class="bar-track"><span class="bar-fill${strict ? " strict" : ""}" style="width:${(n / max * 100).toFixed(0)}%"></span></span>
+      <span class="n">${n}</span>
+    `;
+    barsEl.appendChild(row);
+  }
+
+  const orders = [
+    ["281455","Alexandra Rodrigues Ribeiro","5532991954578","3x Menocare",390,"Stephani Paola","31/08 19:00","31/08 20:40"],
+    ["280243","Jaqueline Patricia da Silva Santos","5541988695807","3x Menocare",390,"Adryele Sorbara","31/08 12:12","31/08 12:45"],
+    ["278310","Eunice Marques do Nascimento","5567999789246","4x Menocare",390,"Carlos Henrique","30/08 11:13","31/08 22:09"],
+    ["277892","Clevia Barreira de Araujo","5589999716704","3x Menocare",390,"Brunna Jumes","29/08 23:54","30/08 19:05"],
+    ["271796","Rogeria Reis Oliveira","5561981036014","3x Menocare",390,"Adryele Sorbara","28/08 06:59","28/08 14:17"],
+    ["264979","Tatiane Oligini da Silva","5554996429411","3x Menocare",390,"Carlos Henrique","25/08 11:26","25/08 13:33"],
+    ["260910","Andreza Regina dos Santos","5511965429624","3x Menocare",390,"Talia","22/08 14:08","22/08 15:10"],
+    ["258834","Zelina Venancio Cruz","5528999467290","4x Menocare",390,"Ana Pilotti","21/08 13:04","21/08 20:29"],
+    ["254139","Fernanda de Sousa Domingos","5535997085682","12x Menocare",790,"Talia","19/08 18:54","20/08 21:32"],
+    ["252184","Dulcilene Souza Rabelo","5574999757305","3x Menocare",390,"Eduardo Vignatti","18/08 19:08","18/08 22:54"],
+    ["250588","Marlene Cândida Faria Santos","5562995169851","3x Menocare",390,"Elaine Cardoso","18/08 09:21","18/08 12:55"],
+    ["247859","Jeane de Oliveira Pereira","5592993559919","3x Menocare",390,"Eduardo Vignatti","17/08 10:37","17/08 13:00"],
+    ["236597","Lauracy Brasil Semblano","5593991448449","3x Menocare",390,"Eduarda Dutra","11/08 18:03","11/08 18:51"],
+    ["234153","Elenira Luiz dos Santos","5517991346993","4x Menocare",390,"Rafaela Vieira","11/08 00:22","11/08 01:07"],
+    ["226235","Amarilda Guedes Muniz","5519981564061","3x Menocare",390,"Rafaela Vieira","07/08 00:59","07/08 01:32"],
+    ["222637","Raquel da Silva Araujo","5522998920864","12x Menocare",790,"Brunna Jumes","05/08 11:19","05/08 11:53"],
+    ["222190","Lígia Jesus Bergaria Alves","5527997200851","2x Menocare",290,"Joao Daumann","05/08 00:28","05/08 01:10"],
+    ["222121","Gelma Cristovam Moreira","5521972784799","3x Menocare",390,"Carlos Henrique","04/08 23:37","05/08 11:43"],
+    ["221273","Terezinha da Luz de Oliveira","5548984009810","3x Menocare",390,"Eduardo Vignatti","04/08 12:39","05/08 14:45"],
+    ["221196","Elda Rosa","5521968960270","3x Menocare",390,"Ana Pilotti","04/08 12:10","05/08 12:13"],
+    ["219943","Gleci Radtke Machado","5553999001995","3x Menocare",390,"Eduarda Dutra","03/08 12:44","03/08 20:12"],
+    ["219683","Maria Lúcia Rodrigues","5527999479104","3x Menocare",390,"Rafaela Vieira","03/08 08:24","03/08 12:14"],
+    ["206128","Maria das Dores Cândido da Silva","5519987191826","3x Menocare",390,"Eduarda Dutra","22/07 21:14","06/08 23:49"],
+    ["138942","Sabrina Felix Pereira de Assis","5533998335857","3x Menocare",390,"Brunna Jumes","05/06 16:51","06/08 11:26"],
+    ["65007","Simone Martins Pereira","5561992990171","12x Menocare",790,"Brunna Jumes","27/03 09:54","23/08 14:48"],
+  ];
+  const fmtBRL = n => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const tbody = document.getElementById("tbody");
+  for (const [code, name, phone, product, value, seller, created, scheduled] of orders) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${code}</td><td>${name}</td><td>${phone}</td><td>${product}</td>
+      <td class="num">${fmtBRL(value)}</td><td>${seller}</td><td>${created}</td><td>${scheduled}</td>
+      <td><span class="pill pending">pendente</span></td><td><span class="pill pending">pendente</span></td>
+    `;
+    tbody.appendChild(tr);
+  }
+</script>

@@ -1,0 +1,60 @@
+/* Estilos do plano de campanhas, todos sob #account-view para não colidir com a página que o contém. */
+#account-view { display: flex; flex-direction: column; gap: 36px; min-width: 0; }
+#account-view h2, #account-view h3 { font-family: var(--font-head); font-weight: 600; margin: 0; text-wrap: balance; }
+#account-view h2 { font-size: 20px; }
+#account-view h2.acc-title { font-size: 26px; letter-spacing: -0.01em; }
+#account-view h3 { font-size: 16px; }
+#account-view p { margin: 0; }
+#account-view .sub { color: var(--ink-2); margin-top: 6px; max-width: 70ch; }
+#account-view .tab { font-variant-numeric: tabular-nums; }
+#account-view .muted { color: var(--muted); }
+#account-view .pos { color: var(--good); }
+#account-view .neg { color: var(--bad); }
+#account-view .warn { color: var(--warn); }
+#account-view section { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+#account-view .lead { color: var(--ink-2); max-width: 75ch; }
+#account-view .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+#account-view .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+#account-view .kpi .l { font-size: 12px; color: var(--muted); }
+#account-view .kpi .v { font-family: var(--font-head); font-size: 22px; font-weight: 600; margin-top: 2px; }
+#account-view .kpi .n { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+#account-view .finding { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+#account-view .finding .num { font-family: var(--font-head); font-weight: 600; color: var(--accent); font-size: 13px; }
+#account-view .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+#account-view table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 0; }
+#account-view th, #account-view td { padding: 8px 12px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+#account-view th:first-child, #account-view td:first-child { text-align: left; }
+#account-view thead th { color: var(--muted); font-weight: 500; font-size: 12px; }
+#account-view tbody tr:last-child td { border-bottom: 0; }
+#account-view tbody tr:hover td { background: transparent; }
+#account-view td.wrap-cell { white-space: normal; }
+#account-view .pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--ink-2); }
+#account-view .pill.on { background: var(--accent-soft); color: var(--accent); }
+#account-view .pill.off { background: var(--warn-bg); color: var(--warn); }
+#account-view .campaign { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; overflow: hidden; }
+#account-view .campaign > header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+#account-view .campaign .budget { font-family: var(--font-head); font-size: 20px; font-weight: 600; }
+#account-view .campaign .goal { padding: 10px 16px 0; color: var(--ink-2); }
+#account-view .cr { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(0, 3fr); gap: 6px 20px; padding: 14px 16px; border-top: 1px solid var(--line); }
+#account-view .cr .name { font-weight: 600; font-size: 15px; }
+#account-view .cr .amt { font-family: var(--font-head); font-size: 18px; font-weight: 600; }
+#account-view .cr ul { margin: 0; padding-left: 18px; color: var(--ink-2); }
+#account-view .cr .facts { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+#account-view .steps { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+#account-view .step { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+#account-view .step b { font-family: var(--font-head); }
+#account-view .notice { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 10px; padding: 12px 14px; color: var(--ink-2); font-size: 14px; }
+#account-view .small { font-size: 12px; color: var(--muted); }
+#account-view ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--ink-2); }
+@media (max-width: 640px) { #account-view .cr { grid-template-columns: 1fr; } #account-view h2.acc-title { font-size: 22px; } }
+#account-view .good { color: var(--good); }
+#account-view .bad { color: var(--bad); }
+#account-view .bar { display: inline-block; height: 8px; border-radius: 4px; background: var(--accent); vertical-align: middle; min-width: 2px; }
+#account-view .bar.alt { background: var(--warn); }
+#account-view .two { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
+#account-view .rec { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 4px 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+#account-view .rec .n { font-family: var(--font-head); font-weight: 600; color: var(--accent); font-size: 18px; }
+#account-view .rec h3 { font-size: 15px; }
+#account-view .rec p { color: var(--ink-2); margin-top: 4px; }
+#account-view .recs { display: flex; flex-direction: column; gap: 10px; }
+@media (max-width: 640px) { #account-view .two { grid-template-columns: 1fr; } }

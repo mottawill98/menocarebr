@@ -1,0 +1,49 @@
+/* Estilos do plano de campanhas, todos sob #plan-view para não colidir com a página que o contém. */
+#plan-view { display: flex; flex-direction: column; gap: 36px; min-width: 0; }
+#plan-view h2, #plan-view h3 { font-family: var(--font-head); font-weight: 600; margin: 0; text-wrap: balance; }
+#plan-view h2 { font-size: 20px; }
+#plan-view h2.plan-title { font-size: 26px; letter-spacing: -0.01em; }
+#plan-view h3 { font-size: 16px; }
+#plan-view p { margin: 0; }
+#plan-view .sub { color: var(--ink-2); margin-top: 6px; max-width: 70ch; }
+#plan-view .tab { font-variant-numeric: tabular-nums; }
+#plan-view .muted { color: var(--muted); }
+#plan-view .pos { color: var(--good); }
+#plan-view .neg { color: var(--bad); }
+#plan-view .warn { color: var(--warn); }
+#plan-view section { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+#plan-view .lead { color: var(--ink-2); max-width: 75ch; }
+#plan-view .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+#plan-view .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+#plan-view .kpi .l { font-size: 12px; color: var(--muted); }
+#plan-view .kpi .v { font-family: var(--font-head); font-size: 22px; font-weight: 600; margin-top: 2px; }
+#plan-view .kpi .n { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+#plan-view .finding { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+#plan-view .finding .num { font-family: var(--font-head); font-weight: 600; color: var(--accent); font-size: 13px; }
+#plan-view .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+#plan-view table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 0; }
+#plan-view th, #plan-view td { padding: 8px 12px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+#plan-view th:first-child, #plan-view td:first-child { text-align: left; }
+#plan-view thead th { color: var(--muted); font-weight: 500; font-size: 12px; }
+#plan-view tbody tr:last-child td { border-bottom: 0; }
+#plan-view tbody tr:hover td { background: transparent; }
+#plan-view td.wrap-cell { white-space: normal; }
+#plan-view .pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--ink-2); }
+#plan-view .pill.on { background: var(--accent-soft); color: var(--accent); }
+#plan-view .pill.off { background: var(--warn-bg); color: var(--warn); }
+#plan-view .campaign { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; overflow: hidden; }
+#plan-view .campaign > header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+#plan-view .campaign .budget { font-family: var(--font-head); font-size: 20px; font-weight: 600; }
+#plan-view .campaign .goal { padding: 10px 16px 0; color: var(--ink-2); }
+#plan-view .cr { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(0, 3fr); gap: 6px 20px; padding: 14px 16px; border-top: 1px solid var(--line); }
+#plan-view .cr .name { font-weight: 600; font-size: 15px; }
+#plan-view .cr .amt { font-family: var(--font-head); font-size: 18px; font-weight: 600; }
+#plan-view .cr ul { margin: 0; padding-left: 18px; color: var(--ink-2); }
+#plan-view .cr .facts { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+#plan-view .steps { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+#plan-view .step { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+#plan-view .step b { font-family: var(--font-head); }
+#plan-view .notice { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 10px; padding: 12px 14px; color: var(--ink-2); font-size: 14px; }
+#plan-view .small { font-size: 12px; color: var(--muted); }
+#plan-view ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--ink-2); }
+@media (max-width: 640px) { #plan-view .cr { grid-template-columns: 1fr; } #plan-view h2.plan-title { font-size: 22px; } }

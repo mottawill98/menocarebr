@@ -1,0 +1,598 @@
+<title>ROI dos Criativos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap">
+<style>
+  /* Layout: ações primeiro, depois totais, controles e a tabela completa com a coluna do anúncio fixa. */
+  :root {
+    --bg: #f5f7f4;
+    --surface: #ffffff;
+    --ink: #14201c;
+    --ink-2: #4a5853;
+    --muted: #75827c;
+    --line: #dde3df;
+    --chip: #eaf0ec;
+    --accent: #0b6b5c;
+    --accent-soft: #dcefe9;
+    --good: #0a7a4a;
+    --bad: #c0392b;
+    --warn: #9a5b00;
+    --warn-bg: #fff3dc;
+    --warn-line: #f0d6a0;
+    --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-head: "Space Grotesk", "Inter", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1513; --surface: #172019; --ink: #e9efeb; --ink-2: #b2beb8; --muted: #86938d;
+      --line: #26332d; --chip: #1f2a24; --accent: #3fb59f; --accent-soft: #14312b;
+      --good: #4cc38a; --bad: #ef6b5b; --warn: #e0a23c; --warn-bg: #2a2214; --warn-line: #4a3b1c;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1513; --surface: #172019; --ink: #e9efeb; --ink-2: #b2beb8; --muted: #86938d;
+    --line: #26332d; --chip: #1f2a24; --accent: #3fb59f; --accent-soft: #14312b;
+    --good: #4cc38a; --bad: #ef6b5b; --warn: #e0a23c; --warn-bg: #2a2214; --warn-line: #4a3b1c;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.45;
+    padding-block: 24px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  h1, h2, h3 { font-family: var(--font-head); font-weight: 600; margin: 0; text-wrap: balance; }
+  h1 { font-size: 26px; letter-spacing: -0.01em; }
+  h2 { font-size: 17px; }
+  p { margin: 0; }
+  .sub { color: var(--ink-2); margin-top: 4px; max-width: 70ch; }
+  .tab { font-variant-numeric: tabular-nums; }
+  .muted { color: var(--muted); }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-width: 0; }
+  .panel-title { font-family: var(--font-head); font-weight: 600; font-size: 15px; }
+  .hint { color: var(--muted); font-size: 12px; margin-top: 6px; }
+
+  /* O que fazer */
+  .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+  .action { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .action header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .action h3 { font-size: 15px; }
+  .count { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--ink-2); }
+  .rule { font-size: 12px; color: var(--muted); }
+  .action.scale { border-top: 3px solid var(--good); }
+  .action.pause { border-top: 3px solid var(--bad); }
+  .action.inad { border-top: 3px solid var(--warn); }
+  .action.check { border-top: 3px solid var(--muted); }
+  .items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .items li { border-top: 1px solid var(--line); }
+  .items button { display: flex; width: 100%; justify-content: space-between; align-items: baseline; gap: 12px; text-align: left; background: none; border: 0; padding: 7px 0; }
+  .items button:hover .nm { text-decoration: underline; }
+  .nm { font-weight: 600; overflow-wrap: anywhere; }
+  .meta { font-size: 12px; color: var(--ink-2); text-align: right; white-space: nowrap; }
+  .more { font-size: 12px; color: var(--muted); padding-top: 6px; border-top: 1px solid var(--line); }
+  .empty { font-size: 13px; color: var(--muted); }
+  .dq { grid-column: 1 / -1; }
+  .dq ul { margin: 6px 0 0; padding-left: 18px; color: var(--ink-2); }
+
+  /* KPIs */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+  .kpi .l { font-size: 12px; color: var(--muted); }
+  .kpi .v { font-family: var(--font-head); font-size: 20px; font-weight: 600; margin-top: 2px; overflow-wrap: anywhere; }
+  .pos { color: var(--good); } .neg { color: var(--bad); } .alert { color: var(--warn); }
+
+  /* Controles */
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; padding: 2px; background: var(--bg); margin-top: 10px; }
+  .seg button { border: 0; background: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; color: var(--ink-2); }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 0 0 1px var(--line); }
+  .seg button:disabled { opacity: .5; cursor: not-allowed; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
+  .field { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 6px 10px; }
+  .field:focus-within { border-color: var(--accent); }
+  .field input { border: 0; background: none; outline: none; min-width: 0; }
+  .big input { font-size: 18px; font-weight: 600; width: 90px; }
+  input[type="date"] { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 6px 8px; color-scheme: inherit; }
+  .unit { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; font-size: 12px; color: var(--ink-2); }
+  .unit b { color: var(--ink); font-weight: 600; }
+  .check { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; font-size: 12px; color: var(--ink-2); cursor: pointer; }
+  .check b { color: var(--ink); font-weight: 600; }
+  .check input { margin-top: 2px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .chip { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 4px 11px; font-size: 12px; color: var(--ink-2); }
+  .chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .linkbtn { background: none; border: 0; color: var(--accent); padding: 0; text-decoration: underline; font-size: 12px; }
+  .notice { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 10px; padding: 10px 14px; font-size: 12px; color: var(--ink-2); }
+
+  /* Tabela */
+  .filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .filters .field input { width: 240px; max-width: 60vw; }
+  .filters label { font-size: 12px; color: var(--ink-2); display: inline-flex; gap: 8px; align-items: center; }
+  .filters label input { width: 64px; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 8px; }
+  .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 2000px; font-size: 13px; }
+  th, td { padding: 9px 12px; white-space: nowrap; text-align: right; border-bottom: 1px solid var(--line); }
+  thead th { color: var(--muted); font-weight: 500; font-size: 12px; }
+  thead tr.groups th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; text-align: center; border-bottom: 0; padding-bottom: 2px; }
+  th.first, td.first { text-align: left; position: sticky; left: 0; background: var(--surface); z-index: 1; max-width: 240px; white-space: normal; }
+  tbody tr:hover td { background: var(--bg); }
+  .gl { border-left: 1px solid var(--line); }
+  th button { background: none; border: 0; color: inherit; font-weight: inherit; font-size: inherit; padding: 0; }
+  th button:hover { color: var(--ink); }
+  th .arr { font-size: 10px; margin-left: 4px; }
+  .adname { font-weight: 600; overflow-wrap: anywhere; }
+  .adsub { font-size: 12px; color: var(--muted); font-weight: 400; }
+  .unknown .adname { font-style: italic; color: var(--muted); }
+  tfoot td { font-weight: 600; background: var(--bg); border-top: 1px solid var(--line); border-bottom: 0; }
+  tfoot td.first { background: var(--bg); }
+  .manual { width: 74px; text-align: right; border: 1px solid var(--line); background: var(--bg); border-radius: 6px; padding: 4px 6px; outline: none; }
+  .manual:focus { border-color: var(--accent); }
+  .manual.set { border-color: var(--accent); }
+  .warnmark { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; margin-right: 4px; border-radius: 50%; background: var(--warn); color: var(--surface); font-size: 10px; font-weight: 700; cursor: help; }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 16px; margin-bottom: -1px; color: var(--ink-2); font-weight: 500; white-space: nowrap; }
+  .tabs button:hover { color: var(--ink); }
+  .tabs button[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+  .view { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  .notes { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; max-width: 110ch; }
+  .notes b { color: var(--ink-2); font-weight: 600; }
+
+  @media (max-width: 520px) { h1 { font-size: 22px; } .kpi .v { font-size: 18px; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>ROI dos Criativos</h1>
+    <p class="sub" id="subtitle"></p>
+  </header>
+
+  <nav class="tabs" aria-label="Seções">
+    <button type="button" id="tab-metrics" aria-pressed="true">Métricas por anúncio</button>
+    <button type="button" id="tab-plan" aria-pressed="false">Plano de campanhas</button>
+    <button type="button" id="tab-account" aria-pressed="false">Análise da conta</button>
+  </nav>
+
+  <div id="metrics-view" class="view">
+  <section aria-labelledby="h-actions">
+    <h2 id="h-actions" style="margin-bottom:10px">O que fazer agora</h2>
+    <p class="hint" style="margin:0 0 10px">Para ver como dividir o orçamento diário entre esses criativos, abra o <button type="button" class="linkbtn" id="goto-plan">plano de campanhas</button>.</p>
+    <div class="actions" id="actions"></div>
+  </section>
+
+  <section aria-label="Totais"><div class="kpis" id="kpis"></div></section>
+
+  <section class="controls" aria-label="Controles">
+    <div class="panel">
+      <div class="panel-title">Custo usado no ROI</div>
+      <div class="seg" role="group" aria-label="Origem do custo">
+        <button type="button" id="mode-real" aria-pressed="true">Gasto real (planilha)</button>
+        <button type="button" id="mode-manual" aria-pressed="false">CPL manual</button>
+      </div>
+      <div class="row">
+        <label class="field big"><span class="muted">R$</span><input id="cpl" inputmode="decimal" placeholder="0,00" aria-label="CPL padrão"></label>
+        <span class="hint" id="cpl-hint" style="max-width:300px;margin:0"></span>
+      </div>
+      <label class="unit"><b>Custo operacional por pedido enviado</b><span class="field"><span class="muted">R$</span><input id="unit" inputmode="decimal" placeholder="0,00" aria-label="Custo operacional por pedido enviado" style="width:64px"></span><span class="muted">produto, frete e demais custos, também nos inadimplentes</span></label>
+      <label class="check"><input type="checkbox" id="discount" checked><span><b>Descontar a inadimplência do lucro e do ROI</b><br><span class="muted">Lucro = receita − custo − valor em aberto dos pedidos inadimplentes.</span></span></label>
+      <p class="hint">Para um item específico, digite um CPL na última coluna da tabela. <button type="button" class="linkbtn" id="clear-overrides" hidden></button></p>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Período (data de entrada do lead)</div>
+      <div class="row">
+        <input type="date" id="from" aria-label="Data inicial">
+        <span class="muted" style="font-size:12px">até</span>
+        <input type="date" id="to" aria-label="Data final">
+      </div>
+      <div class="chips" id="presets"></div>
+    </div>
+  </section>
+
+  <div id="notices" style="display:flex;flex-direction:column;gap:10px"></div>
+
+  <section aria-labelledby="h-table" style="display:flex;flex-direction:column;gap:12px" id="table-section">
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
+      <h2 id="h-table">Métricas por anúncio</h2>
+      <div class="seg" style="margin:0" role="group" aria-label="Agrupar por">
+        <button type="button" id="view-ad" aria-pressed="true">Por anúncio</button>
+        <button type="button" id="view-camp" aria-pressed="false">Por campanha</button>
+      </div>
+    </div>
+    <div class="filters">
+      <label class="field"><svg class="muted" aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg><input id="search" placeholder="Pesquisar anúncio ou campanha..." aria-label="Pesquisar anúncio ou campanha"></label>
+      <label>Mínimo de leads <input id="minleads" inputmode="numeric" value="0"></label>
+      <label>Gasto mínimo <span class="field"><span class="muted">R$</span><input id="minspend" inputmode="decimal" value="0" aria-label="Gasto mínimo por anúncio" style="width:80px"></span></label>
+      <span class="muted" style="font-size:12px" id="rowcount"></span>
+    </div>
+    <div class="scroll"><table id="tbl"></table></div>
+  </section>
+
+  <section class="notes" id="notes"></section>
+  </div>
+
+  <div id="plan-view" class="view" hidden><div id="plan-root"></div></div>
+
+  <div id="account-view" class="view" hidden><div id="account-root"></div></div>
+</div>
+
+<style>/*__PLAN_CSS__*/</style>
+<style>/*__ACCOUNT_CSS__*/</style>
+<script id="data" type="application/json">/*__DATA__*/</script>
+<script id="plan" type="application/json">/*__PLAN__*/</script>
+<script id="account" type="application/json">/*__ACCOUNT__*/</script>
+<script>
+/*__PLAN_JS__*/
+</script>
+<script>
+/*__ACCOUNT_JS__*/
+</script>
+<script>
+(function () {
+  var D = JSON.parse(document.getElementById('data').textContent);
+  var leadsStart = D.sources.leadsRange[0], leadsEnd = D.sources.leadsRange[1];
+  var dataEnd = [leadsEnd, D.sources.paidRange[1]].sort().pop();
+  var STORE = 'roi-criativos:v1';
+
+  var brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  var nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
+  function money(v) { return v == null ? '—' : brl.format(v); }
+  function int(v) { return v == null ? '—' : nf0.format(Math.round(v)); }
+  function pct(v, d) { return v == null ? '—' : v.toLocaleString('pt-BR', { minimumFractionDigits: d == null ? 2 : d, maximumFractionDigits: d == null ? 2 : d }) + '%'; }
+  function roasf(v) { return v == null ? '—' : v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'x'; }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function fmtDate(d) { return d ? d.split('-').reverse().join('/') : '—'; }
+  function div(a, b) { return b > 0 ? a / b : null; }
+  function parseMoney(s) { var n = Number(String(s || '').trim().replace(',', '.')); return isFinite(n) && n > 0 ? n : null; }
+  function shiftDay(day, delta) { var d = new Date(day + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + delta); return d.toISOString().slice(0, 10); }
+  function cls(v) { return v == null ? 'muted' : v >= 0 ? 'pos' : 'neg'; }
+  function $(id) { return document.getElementById(id); }
+
+  var hasSpend = D.sources.spendTotal > 0;
+  var hasCampSpend = D.sources.campaignSpendTotal > 0;
+  var campCovered = 0, campTotal = 0;
+  (function () {
+    var l = D.campaigns.map(function () { return 0; });
+    D.rows.forEach(function (r) { if (r[2] !== '' && r[2] >= leadsStart) l[r[1]] += r[3]; });
+    D.campaigns.forEach(function (c, i) { if (c.key === '') return; campTotal += l[i]; if (c.spend) campCovered += l[i]; });
+  })();
+  var S = { from: leadsStart, to: '', mode: hasSpend ? 'real' : 'manual', discount: true, unit: '80', cpl: '', overrides: {}, search: '', minLeads: 0, minSpend: 0, view: 'ad', sortKey: 'spend', sortDir: 'desc' };
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (saved) { S.cpl = saved.cpl || ''; S.overrides = saved.overrides || {}; if (saved.mode === 'manual' || (saved.mode === 'real' && hasSpend)) S.mode = saved.mode; if (saved.discount === false) S.discount = false; if (typeof saved.unit === 'string') S.unit = saved.unit; }
+  } catch (e) {}
+  function persist() { try { localStorage.setItem(STORE, JSON.stringify({ cpl: S.cpl, overrides: S.overrides, mode: S.mode, discount: S.discount, unit: S.unit })); } catch (e) {} }
+
+  // ---------- cálculo ----------
+  var C0 = D.campaigns.findIndex(function (c) { return c.key === ''; });
+  function build(mode) {
+    var nC = D.campaigns.length, isAd = mode === 'ad';
+    var datedAll = D.ads.map(function () { return 0; });
+    var cDatedAll = D.campaigns.map(function () { return 0; }), cDated = D.campaigns.map(function () { return 0; });
+    var pairs = {};
+    function pair(a, c) { var k = a * nC + c, p = pairs[k]; if (!p) p = pairs[k] = { a: a, c: c, leads: 0, sales: 0, rev: 0, inad: 0, inadVal: 0, dated: 0 }; return p; }
+    var undated = !S.from && !S.to;
+    D.rows.forEach(function (r) {
+      var day = r[2];
+      if (day !== '') { datedAll[r[0]] += r[3]; cDatedAll[r[1]] += r[3]; }
+      if (day === '') { if (!undated) return; }
+      else if ((S.from && day < S.from) || (S.to && day > S.to)) return;
+      var p = pair(r[0], r[1]);
+      if (day !== '') { p.dated += r[3]; cDated[r[1]] += r[3]; }
+      p.leads += r[3]; p.sales += r[4]; p.rev += r[5]; p.inad += r[6]; p.inadVal += r[7];
+    });
+    var whole = (!S.from || S.from <= leadsStart) && (!S.to || S.to >= leadsEnd);
+    // Criativo com gasto e sem nenhum lead datado: o gasto cai em "(sem campanha identificada)".
+    if (isAd) D.ads.forEach(function (ad, a) { if (ad.spend && datedAll[a] === 0) pair(a, C0); });
+
+    // O gasto da planilha é por criativo. Cada par (anúncio, campanha) recebe a fração do gasto
+    // igual à fração dos leads datados do anúncio que caem nele e no período.
+    var groups = {};
+    function newGroup() { return { leads: 0, sales: 0, rev: 0, inad: 0, inadVal: 0, meta: false, spend: 0, impr: 0, clicks: 0, conv: 0, members: {} }; }
+    Object.keys(pairs).forEach(function (k) {
+      var p = pairs[k], meta = D.ads[p.a].spend, f = 0;
+      if (meta) { if (datedAll[p.a] > 0) f = Math.min(1, p.dated / datedAll[p.a]); else if (p.c === C0 && whole) f = 1; }
+      var gk = isAd ? p.a : p.c;
+      var g = groups[gk] || (groups[gk] = newGroup());
+      g.leads += p.leads; g.sales += p.sales; g.rev += p.rev; g.inad += p.inad; g.inadVal += p.inadVal;
+      if (meta && isAd) { g.meta = true; g.spend += meta.spend * f; g.impr += meta.impressions * f; g.clicks += meta.linkClicks * f; g.conv += meta.conversations * f; }
+      var mk = isAd ? p.c : p.a;
+      g.members[mk] = (g.members[mk] || 0) + p.leads + p.sales;
+    });
+
+    // Visão por campanha: usa o custo real de cada campanha (planilha "Custo campanhas"), na fração de leads do período.
+    if (!isAd) D.campaigns.forEach(function (camp, c) {
+      var meta = camp.spend; if (!meta) return;
+      var f = cDatedAll[c] > 0 ? Math.min(1, cDated[c] / cDatedAll[c]) : (whole ? 1 : 0);
+      var g = groups[c] || (groups[c] = newGroup());
+      g.meta = true; g.spend += meta.spend * f; g.impr += meta.impressions * f; g.clicks += meta.linkClicks * f; g.conv += meta.conversations * f;
+    });
+    var globalCpl = parseMoney(S.cpl);
+    var unit = parseMoney(S.unit) || 0;
+    var out = [];
+    Object.keys(groups).forEach(function (gk) {
+      var g = groups[gk], spend = g.meta ? g.spend : null;
+      if (g.leads === 0 && g.sales === 0 && g.inad === 0 && !(spend && spend > 0)) return;
+      var ad = isAd ? D.ads[gk] : null, camp = isAd ? null : D.campaigns[gk];
+      var id = isAd ? ad.key : 'c:' + camp.key;
+      var ov = parseMoney(S.overrides[id]);
+      var cost;
+      if (ov != null) cost = g.leads * ov; else if (S.mode === 'real' && spend != null) cost = spend; else cost = globalCpl == null ? null : g.leads * globalCpl;
+      var name, sub = [], search;
+      var memberKeys = Object.keys(g.members).sort(function (x, y) { return g.members[y] - g.members[x]; });
+      if (isAd) {
+        name = ad.name;
+        var merged = ad.variants.filter(function (v) { return v.trim().toLowerCase() !== ad.name.toLowerCase(); });
+        if (merged.length) sub.push('inclui ' + esc(merged.join(', ')));
+        var nCamp = memberKeys.filter(function (m) { return Number(m) !== C0; }).length;
+        if (nCamp > 0) sub.push(nCamp + ' campanha' + (nCamp > 1 ? 's' : ''));
+        search = name + ' ' + memberKeys.map(function (m) { return D.campaigns[m].name; }).join(' ');
+      } else {
+        name = camp.name;
+        var names = memberKeys.filter(function (m) { return D.ads[m].key !== ''; }).map(function (m) { return D.ads[m].name; });
+        if (names.length) sub.push(names.length + ' anúncio' + (names.length > 1 ? 's' : '') + ': ' + esc(names.slice(0, 4).join(', ')) + (names.length > 4 ? '…' : ''));
+        search = name + ' ' + names.join(' ');
+      }
+      out.push({
+        id: id, name: name, sub: sub.join(' · '), search: search.toLowerCase(), unknown: isAd ? ad.key === '' : camp.key === '', custom: ov != null,
+        spend: spend, impressions: g.meta ? g.impr : null, clicks: g.clicks,
+        cpm: g.meta ? div(g.spend, g.impr / 1000) : null,
+        ctr: g.meta ? div(g.clicks * 100, g.impr) : null,
+        conversations: g.meta ? g.conv : null,
+        costPerConv: g.meta ? div(g.spend, g.conv) : null,
+        leads: g.leads, cpl: cost != null ? div(cost, g.leads) : null, sales: g.sales,
+        conversion: g.leads > 0 ? g.sales / g.leads * 100 : null,
+        cost: cost, cpa: cost != null ? div(cost, g.sales) : null,
+        inad: g.inad, inadRate: div(g.inad * 100, g.sales + g.inad), inadValue: g.inadVal,
+        revenue: g.rev, roas: cost != null ? div(g.rev, cost) : null,
+        productCost: (g.sales + g.inad) * unit,
+        profit: cost == null ? null : g.rev - cost - (g.sales + g.inad) * unit - (S.discount ? g.inadVal : 0),
+        roi: cost != null && cost > 0 ? (g.rev - cost - (g.sales + g.inad) * unit - (S.discount ? g.inadVal : 0)) / cost * 100 : null
+      });
+    });
+    return { rows: out, whole: whole };
+  }
+
+  function totalsOf(rows) {
+    var t = { spend: 0, impressions: 0, conversations: 0, clicks: 0, leads: 0, sales: 0, revenue: 0, inad: 0, inadValue: 0, cost: 0, cLeads: 0, cSales: 0, cRev: 0, cInad: 0, cInadN: 0, uncosted: 0 };
+    rows.forEach(function (r) {
+      t.leads += r.leads; t.sales += r.sales; t.revenue += r.revenue; t.inad += r.inad; t.inadValue += r.inadValue;
+      if (r.spend != null) { t.spend += r.spend; t.impressions += r.impressions || 0; t.conversations += r.conversations || 0; t.clicks += r.clicks || 0; }
+      if (r.cost != null) { t.cost += r.cost; t.cLeads += r.leads; t.cSales += r.sales; t.cRev += r.revenue; t.cInad += r.inadValue; t.cInadN += r.inad; }
+      else if (r.leads > 0 || r.sales > 0) t.uncosted++;
+    });
+    t.cpm = div(t.spend, t.impressions / 1000); t.ctr = div(t.clicks * 100, t.impressions);
+    t.costPerConv = div(t.spend, t.conversations);
+    t.cpl = div(t.cost, t.cLeads); t.conversion = div(t.sales * 100, t.leads); t.cpa = div(t.cost, t.cSales);
+    t.inadRate = div(t.inad * 100, t.sales + t.inad);
+    t.roas = div(t.revenue, t.cost); var unitT = parseMoney(S.unit) || 0; t.productCost = (t.sales + t.inad) * unitT; t.profit = t.revenue - t.cost - (t.sales + t.inad) * unitT - (S.discount ? t.inadValue : 0); t.roi = t.cost > 0 ? t.profit / t.cost * 100 : null;
+    return t;
+  }
+
+  // ---------- colunas ----------
+  var GROUPS = [
+    { label: 'Meta', cols: [
+      { k: 'spend', l: 'Gasto', c: function (r) { return money(r.spend); }, f: function (t) { return money(t.spend); } },
+      { k: 'impressions', l: 'Impressões', c: function (r) { return int(r.impressions); }, f: function (t) { return int(t.impressions); } },
+      { k: 'cpm', l: 'CPM', c: function (r) { return money(r.cpm); }, f: function (t) { return money(t.cpm); } },
+      { k: 'ctr', l: 'CTR link', c: function (r) { return pct(r.ctr); }, f: function (t) { return pct(t.ctr); } },
+      { k: 'conversations', l: 'Conversas', c: function (r) { return int(r.conversations); }, f: function (t) { return int(t.conversations); } },
+      { k: 'costPerConv', l: 'Custo/conversa', c: function (r) { return money(r.costPerConv); }, f: function (t) { return money(t.costPerConv); } }
+    ] },
+    { label: 'Funil', cols: [
+      { k: 'leads', l: 'Leads', c: function (r) { return int(r.leads); }, f: function (t) { return int(t.leads); } },
+      { k: 'cpl', l: 'CPL', c: function (r) { return money(r.cpl); }, f: function (t) { return money(t.cpl); } },
+      { k: 'sales', l: 'Vendas', c: function (r) { return int(r.sales); }, f: function (t) { return int(t.sales); } },
+      { k: 'conversion', l: 'Conversão', c: function (r) {
+          var w = r.sales > r.leads ? '<span class="warnmark" title="Há mais vendas do que leads neste período: parte das vendas veio de leads que não estão na planilha de leads.">!</span>' : '';
+          return w + pct(r.conversion); }, f: function (t) { return pct(t.conversion); } },
+      { k: 'cpa', l: 'Custo/venda', c: function (r) { return money(r.cpa); }, f: function (t) { return money(t.cpa); } }
+    ] },
+    { label: 'Inadimplência', cols: [
+      { k: 'inad', l: 'Inadimplentes', c: function (r) { return int(r.inad); }, f: function (t) { return int(t.inad); } },
+      { k: 'inadRate', l: '% inadimpl.', c: function (r) { return pct(r.inadRate, 1); }, f: function (t) { return pct(t.inadRate, 1); }, cc: function (r) { return r.inadRate != null && r.inadRate >= 20 ? 'alert' : ''; } },
+      { k: 'inadValue', l: 'Valor em aberto', c: function (r) { return money(r.inadValue); }, f: function (t) { return money(t.inadValue); } }
+    ] },
+    { label: 'Resultado', cols: [
+      { k: 'revenue', l: 'Receita', c: function (r) { return money(r.revenue); }, f: function (t) { return money(t.revenue); } },
+      { k: 'productCost', l: 'Custo operacional', c: function (r) { return money(r.productCost); }, f: function (t) { return money(t.productCost); } },
+      { k: 'roas', l: 'ROAS', c: function (r) { return roasf(r.roas); }, f: function (t) { return roasf(t.roas); } },
+      { k: 'profit', l: 'Lucro', c: function (r) { return money(r.profit); }, f: function (t) { return t.cost > 0 ? money(t.profit) : '—'; }, cc: function (r) { return cls(r.profit); }, fc: function (t) { return t.cost > 0 ? cls(t.profit) : 'muted'; } },
+      { k: 'roi', l: 'ROI', c: function (r) { return r.roi == null ? '—' : pct(r.roi, 0); }, f: function (t) { return t.roi == null ? '—' : pct(t.roi, 0); }, cc: function (r) { return cls(r.roi); }, fc: function (t) { return cls(t.roi); } }
+    ] }
+  ];
+
+  // ---------- render ----------
+  var view = [];
+  function render() {
+    var b = build(S.view), rows = b.rows;
+    var adRows = S.view === 'ad' ? rows : build('ad').rows;
+    var q = S.search.trim().toLowerCase();
+    view = rows.filter(function (r) { return r.leads >= S.minLeads && (r.spend || 0) >= S.minSpend && (!q || r.search.indexOf(q) >= 0); });
+    var dir = S.sortDir === 'asc' ? 1 : -1;
+    view.sort(function (a, c) {
+      if (S.sortKey === 'name') return a.name.localeCompare(c.name, 'pt-BR', { numeric: true }) * dir;
+      var x = a[S.sortKey], y = c[S.sortKey];
+      if (x == null) return 1; if (y == null) return -1;
+      return (x - y) * dir;
+    });
+    var t = totalsOf(view);
+    renderActions(adRows);
+    renderKpis(t);
+    renderControls(b);
+    renderTable(t);
+    renderNotes();
+  }
+
+  function renderSubtitle() {
+    $('subtitle').textContent = int(D.sources.leadsRows) + ' leads, ' + int(D.sources.salesCount) + ' vendas e ' + money(D.sources.spendTotal) + ' investidos, cruzados pelo nome do anúncio · ' +
+      D.ads.filter(function (a) { return a.key !== ''; }).length + ' anúncios. Dados de ' + new Date(D.generatedAt).toLocaleDateString('pt-BR') + '.';
+  }
+
+  var MIN_SPEND = 5000;
+  function renderActions(rows) {
+    var known = rows.filter(function (r) { return !r.unknown; });
+    var scale = known.filter(function (r) { return r.spend >= MIN_SPEND && r.sales >= 30 && r.roi != null && r.roi >= 150 && (r.inadRate || 0) < 15; }).sort(function (a, b) { return b.roi - a.roi; });
+    var pause = known.filter(function (r) { return r.spend >= MIN_SPEND && r.leads >= 100 && r.roi != null && r.roi < 0; }).sort(function (a, b) { return b.spend - a.spend; });
+    var inad = known.filter(function (r) { return r.sales + r.inad >= 100 && r.inadRate >= 20; }).sort(function (a, b) { return b.inadValue - a.inadValue; });
+    var chk = known.filter(function (r) { return r.spend >= MIN_SPEND && r.leads < 50; }).sort(function (a, b) { return b.spend - a.spend; });
+
+    function card(kind, title, rule, list, meta) {
+      var shown = list.slice(0, 8);
+      var items = shown.map(function (r) {
+        return '<li><button type="button" data-ad="' + esc(r.name) + '" title="Filtrar a tabela por este anúncio"><span class="nm">' + esc(r.name) + '</span><span class="meta tab">' + meta(r) + '</span></button></li>';
+      }).join('');
+      var more = list.length > shown.length ? '<div class="more">e mais ' + (list.length - shown.length) + ' na tabela abaixo</div>' : '';
+      return '<article class="action ' + kind + '"><header><h3>' + title + '</h3><span class="count tab">' + list.length + '</span></header><p class="rule">' + rule + '</p>' +
+        (list.length ? '<ul class="items">' + items + '</ul>' + more : '<p class="empty">Nenhum anúncio atende a este critério no período.</p>') + '</article>';
+    }
+    var h = '';
+    h += card('scale', 'Escalar', 'Gasto ≥ R$ 5 mil, 30+ vendas, ROI ≥ 150% e inadimplência abaixo de 15%. Aumente o orçamento aos poucos e acompanhe o ROI.', scale,
+      function (r) { return 'ROI ' + pct(r.roi, 0) + ' · ' + money(r.spend) + ' · ' + int(r.sales) + ' vendas'; });
+    h += card('pause', 'Pausar ou trocar o criativo', 'Gasto ≥ R$ 5 mil, 100+ leads e ROI negativo: o anúncio custa mais do que devolve.', pause,
+      function (r) { return 'ROI ' + pct(r.roi, 0) + ' · ' + money(r.spend) + ' gasto'; });
+    h += card('inad', 'Reforçar cobrança e confirmação', '100+ pedidos e 20% ou mais deles inadimplentes. ' + (S.discount ? 'O valor em aberto já está descontado do lucro e do ROI.' : 'O valor em aberto não está descontado do lucro; há dinheiro parado e frete perdido.'), inad,
+      function (r) { return pct(r.inadRate, 0) + ' · ' + int(r.inad) + ' pedidos · ' + money(r.inadValue); });
+    h += card('check', 'Conferir o nome do anúncio', 'Gasto ≥ R$ 5 mil com menos de 50 leads: o nome no Meta provavelmente difere do que chega ao CRM, e o ROI fica errado.', chk,
+      function (r) { return money(r.spend) + ' · ' + int(r.leads) + ' leads'; });
+    h += '<article class="action dq"><h3>Ajustes nos dados</h3><ul>' +
+      '<li><b>' + int(D.sources.inadUnattributed) + ' pedidos inadimplentes</b> (sem lead com o mesmo telefone) não têm anúncio e ficam em "(sem anúncio identificado)". Registrar a origem do pedido no CRM resolve.</li>' +
+      '<li><b>' + int(D.sources.salesWithoutValue) + ' vendas sem valor</b> na planilha de pagantes entram só na contagem, sem receita.</li>' +
+      '<li>A planilha de gasto não tem datas: com período menor que a base de leads, gasto e métricas do Meta são estimados.</li></ul></article>';
+    $('actions').innerHTML = h;
+  }
+
+  function stat(l, v, c) { return '<div class="kpi"><div class="l">' + l + '</div><div class="v tab ' + (c || '') + '">' + v + '</div></div>'; }
+  function renderKpis(t) {
+    $('kpis').innerHTML =
+      stat('Gasto (Meta)', hasSpend ? money(t.spend) : '—') + stat('Leads', int(t.leads)) + stat('CPL', money(t.cpl), t.cpl == null ? 'muted' : '') +
+      stat('Vendas', int(t.sales)) + stat('Conversão', pct(t.conversion)) + stat('Custo por venda', money(t.cpa), t.cpa == null ? 'muted' : '') +
+      stat('Inadimplentes', int(t.inad)) + stat('% inadimplência', pct(t.inadRate, 1)) + stat('Receita', money(t.revenue)) +
+      stat('ROAS', roasf(t.roas), t.roas == null ? 'muted' : t.roas >= 1 ? 'pos' : 'neg') + stat('Lucro', t.cost > 0 ? money(t.profit) : '—', cls(t.cost > 0 ? t.profit : null)) +
+      stat('ROI', t.roi == null ? '—' : pct(t.roi, 0), cls(t.roi));
+  }
+
+  function renderControls(b) {
+    $('mode-real').setAttribute('aria-pressed', String(S.mode === 'real'));
+    $('mode-manual').setAttribute('aria-pressed', String(S.mode === 'manual'));
+    $('mode-real').disabled = !hasSpend;
+    $('cpl-hint').textContent = S.mode === 'real' ? 'CPL padrão, usado só nos anúncios que não estão na planilha de gasto.' : 'por lead, aplicado a todos os anúncios (ignora o gasto da planilha).';
+    var n = Object.keys(S.overrides).length;
+    var btn = $('clear-overrides'); btn.hidden = n === 0; btn.textContent = 'Limpar ' + n + ' CPL individual(is)';
+    if (document.activeElement !== $('from')) $('from').value = S.from;
+    if (document.activeElement !== $('to')) $('to').value = S.to;
+    $('from').min = leadsStart;
+    var presets = [['Base de leads', leadsStart, ''], ['Últimos 30 dias', shiftDay(dataEnd, -29), ''], ['Últimos 7 dias', shiftDay(dataEnd, -6), ''], ['Todo o período', '', '']];
+    $('presets').innerHTML = presets.map(function (p, i) { return '<button type="button" class="chip" data-p="' + i + '" aria-pressed="' + (S.from === p[1] && S.to === p[2]) + '">' + p[0] + '</button>'; }).join('');
+    var notes = '';
+    if (!S.from && !S.to) notes += '<div class="notice">A planilha de leads cobre só ' + fmtDate(leadsStart) + ' a ' + fmtDate(leadsEnd) + ', mas a de pagantes tem vendas desde ' + fmtDate(D.sources.paidRange[0]) + '. Em "Todo o período", as vendas de leads anteriores a ' + fmtDate(leadsStart) + ' entram sem os leads correspondentes e a conversão fica inflada. Para uma conversão comparável, use "Base de leads".</div>';
+    if (hasSpend && !b.whole) notes += '<div class="notice">A planilha de gasto não tem datas. Com o período reduzido, gasto, impressões e conversas são <b>estimados</b>, rateados pela fração de leads de cada anúncio que cai no período.</div>';
+    if (S.view === 'camp' && hasCampSpend) notes += '<div class="notice">O gasto de cada campanha é o <b>valor real do Meta</b> (planilha "Custo campanhas"). ' + pct(campCovered / campTotal * 100, 0) + ' dos leads estão em campanhas com custo. Os outros ' + int(campTotal - campCovered) + ' leads estão em campanhas que aparecem com outro nome no CRM: ficam sem custo na tabela, e o gasto delas está somado em outras linhas.</div>';
+    $('notices').innerHTML = notes;
+    var isCamp = S.view === 'camp';
+    $('view-ad').setAttribute('aria-pressed', String(!isCamp)); $('view-camp').setAttribute('aria-pressed', String(isCamp));
+    $('h-table').textContent = isCamp ? 'Métricas por campanha' : 'Métricas por anúncio';
+    $('search').placeholder = isCamp ? 'Pesquisar campanha ou anúncio...' : 'Pesquisar anúncio ou campanha...';
+    $('minspend').setAttribute('aria-label', isCamp ? 'Gasto mínimo por campanha' : 'Gasto mínimo por anúncio');
+  }
+
+  function renderTable(t) {
+    var head1 = '<tr class="groups"><th class="first"></th>' + GROUPS.map(function (g, gi) { return '<th colspan="' + g.cols.length + '"' + (gi ? ' class="gl"' : '') + '>' + g.label + '</th>'; }).join('') + '<th class="gl"></th></tr>';
+    function arrow(k) { return S.sortKey === k ? '<span class="arr">' + (S.sortDir === 'asc' ? '▲' : '▼') + '</span>' : ''; }
+    var head2 = '<tr><th class="first"><button type="button" data-sort="name">' + (S.view === 'camp' ? 'Campanha' : 'Anúncio') + arrow('name') + '</button></th>' +
+      GROUPS.map(function (g, gi) { return g.cols.map(function (c, ci) { return '<th' + (gi && ci === 0 ? ' class="gl"' : '') + '><button type="button" data-sort="' + c.k + '">' + c.l + arrow(c.k) + '</button></th>'; }).join(''); }).join('') +
+      '<th class="gl">CPL manual</th></tr>';
+    var body = view.map(function (r) {
+      var cells = GROUPS.map(function (g, gi) { return g.cols.map(function (c, ci) {
+        return '<td class="tab' + (gi && ci === 0 ? ' gl' : '') + (c.cc && c.cc(r) ? ' ' + c.cc(r) : '') + '">' + c.c(r) + '</td>'; }).join(''); }).join('');
+      var ph = r.leads > 0 && r.cpl != null ? r.cpl.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+      return '<tr' + (r.unknown ? ' class="unknown"' : '') + '><td class="first"><div class="adname">' + esc(r.name) + '</div>' + (r.sub ? '<div class="adsub">' + r.sub + '</div>' : '') + '</td>' + cells +
+        '<td class="gl"><input class="manual tab' + (r.custom ? ' set' : '') + '" data-key="' + esc(r.id) + '" inputmode="decimal" placeholder="' + ph + '" value="' + esc(S.overrides[r.id] || '') + '" aria-label="CPL manual de ' + esc(r.name) + '"></td></tr>';
+    }).join('');
+    var empty = '<tr><td class="first" colspan="21" style="text-align:center;color:var(--muted);padding:32px">Nada encontrado para os filtros atuais.</td></tr>';
+    var foot = '<tr><td class="first">Total (' + view.length + ')</td>' + GROUPS.map(function (g, gi) { return g.cols.map(function (c, ci) {
+      return '<td class="tab' + (gi && ci === 0 ? ' gl' : '') + (c.fc && c.fc(t) ? ' ' + c.fc(t) : '') + '">' + c.f(t) + '</td>'; }).join(''); }).join('') + '<td class="gl"></td></tr>';
+    var active = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('manual') ? document.activeElement : null;
+    var activeKey = active ? active.getAttribute('data-key') : null, pos = active ? active.selectionStart : 0;
+    $('tbl').innerHTML = '<thead>' + head1 + head2 + '</thead><tbody>' + (view.length ? body : empty) + '</tbody>' + (view.length ? '<tfoot>' + foot + '</tfoot>' : '');
+    if (activeKey != null) {
+      var again = $('tbl').querySelector('input.manual[data-key="' + (window.CSS && CSS.escape ? CSS.escape(activeKey) : activeKey) + '"]');
+      if (again) { again.focus(); try { again.setSelectionRange(pos, pos); } catch (e) {} }
+    }
+    $('rowcount').textContent = view.length + (S.view === 'camp' ? ' campanha(s)' : ' anúncio(s)') + (t.uncosted ? ' · ' + t.uncosted + ' sem custo de anúncio conhecido (receita e perdas entram no lucro total, sem custo)' : '');
+  }
+
+  function renderNotes() {
+    $('notes').innerHTML =
+      '<p><b>Gasto, impressões, CPM, CTR e conversas</b> vêm da planilha do Meta (CTR = cliques no link ÷ impressões). <b>Leads, vendas e receita</b> vêm das planilhas de leads e de pagantes; receita = soma da coluna "Valor" (' + int(D.sources.salesWithoutValue) + ' vendas sem valor entram só na contagem).</p>' +
+      '<p><b>Inadimplentes</b> vêm das duas planilhas de inadimplência (' + int(D.sources.inadCount) + ' pedidos, ' + money(D.sources.inadValueTotal) + ' em aberto): cada pedido é ligado pelo telefone ao lead e vai para o anúncio dele; ' + int(D.sources.inadMatchedLead + D.sources.inadMatchedPaid) + ' foram ligados a um anúncio. Não entram em Vendas nem em Receita' + (S.discount ? ', mas o valor em aberto é descontado do Lucro e do ROI' : '') + '. % inadimplência = inadimplentes ÷ (vendas + inadimplentes).</p>' +
+      '<p>CPL = custo ÷ leads · Custo/venda = custo ÷ vendas · ROAS = receita ÷ custo · Custo operacional = ' + money(parseMoney(S.unit) || 0) + ' × (vendas + inadimplentes) · Lucro = receita − custo − custo operacional' + (S.discount ? ' − valor em aberto dos inadimplentes' : '') + ' · ROI = lucro ÷ custo. Anúncios são agrupados pelo nome, sem diferenciar maiúsculas, zeros à esquerda nem sufixos como "Ads"; nomes repetidos em campanhas diferentes são somados. Campanhas são agrupadas pelo nome exato (sem diferenciar maiúsculas); uma cópia de campanha conta como outra campanha.</p>';
+  }
+
+  // ---------- eventos ----------
+  $('view-ad').addEventListener('click', function () { S.view = 'ad'; render(); });
+  $('view-camp').addEventListener('click', function () { S.view = 'camp'; render(); });
+  $('mode-real').addEventListener('click', function () { S.mode = 'real'; persist(); render(); });
+  $('unit').addEventListener('input', function (e) { S.unit = e.target.value; persist(); render(); });
+  $('discount').addEventListener('change', function (e) { S.discount = e.target.checked; persist(); render(); });
+  $('mode-manual').addEventListener('click', function () { S.mode = 'manual'; persist(); render(); });
+  $('cpl').addEventListener('input', function (e) { S.cpl = e.target.value; persist(); render(); });
+  $('clear-overrides').addEventListener('click', function () { S.overrides = {}; persist(); render(); });
+  $('from').addEventListener('change', function (e) { S.from = e.target.value; render(); });
+  $('to').addEventListener('change', function (e) { S.to = e.target.value; render(); });
+  $('search').addEventListener('input', function (e) { S.search = e.target.value; render(); });
+  $('minleads').addEventListener('input', function (e) { var v = e.target.value.replace(/\D/g, ''); e.target.value = v; S.minLeads = Number(v) || 0; render(); });
+  $('minspend').addEventListener('input', function (e) { S.minSpend = parseMoney(e.target.value) || 0; render(); });
+  $('presets').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-p]'); if (!b) return;
+    var p = [[leadsStart, ''], [shiftDay(dataEnd, -29), ''], [shiftDay(dataEnd, -6), ''], ['', '']][Number(b.getAttribute('data-p'))];
+    S.from = p[0]; S.to = p[1]; render();
+  });
+  $('actions').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-ad]'); if (!b) return;
+    S.view = 'ad'; S.search = b.getAttribute('data-ad'); $('search').value = S.search; S.minLeads = 0; $('minleads').value = '0'; S.minSpend = 0; $('minspend').value = '0'; render();
+    $('table-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  $('tbl').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-sort]'); if (!b) return;
+    var k = b.getAttribute('data-sort');
+    if (S.sortKey === k) S.sortDir = S.sortDir === 'asc' ? 'desc' : 'asc'; else { S.sortKey = k; S.sortDir = k === 'name' ? 'asc' : 'desc'; }
+    render();
+  });
+  $('tbl').addEventListener('input', function (e) {
+    var el = e.target; if (!el.classList || !el.classList.contains('manual')) return;
+    var key = el.getAttribute('data-key');
+    if (el.value.trim()) S.overrides[key] = el.value; else delete S.overrides[key];
+    persist(); render();
+  });
+
+  // ---------- abas: métricas / plano ----------
+  var planDone = false, accountDone = false;
+  function showTab(name) {
+    $('metrics-view').hidden = name !== 'metrics'; $('plan-view').hidden = name !== 'plan'; $('account-view').hidden = name !== 'account';
+    $('tab-metrics').setAttribute('aria-pressed', String(name === 'metrics')); $('tab-plan').setAttribute('aria-pressed', String(name === 'plan')); $('tab-account').setAttribute('aria-pressed', String(name === 'account'));
+    if (name === 'plan' && !planDone) { planDone = true; window.renderPlan(JSON.parse($('plan').textContent), $('plan-root')); }
+    if (name === 'account' && !accountDone) { accountDone = true; window.renderAccount(JSON.parse($('account').textContent), $('account-root')); }
+  }
+  function routeFromHash() { showTab(location.hash === '#plano' ? 'plan' : location.hash === '#conta' ? 'account' : 'metrics'); }
+  $('tab-metrics').addEventListener('click', function () { location.hash = ''; showTab('metrics'); });
+  $('tab-plan').addEventListener('click', function () { location.hash = 'plano'; showTab('plan'); });
+  $('tab-account').addEventListener('click', function () { location.hash = 'conta'; showTab('account'); });
+  $('goto-plan').addEventListener('click', function () { location.hash = 'plano'; showTab('plan'); window.scrollTo(0, 0); });
+  window.addEventListener('hashchange', routeFromHash);
+  routeFromHash();
+
+  $('cpl').value = S.cpl;
+  $('discount').checked = S.discount;
+  $('unit').value = S.unit;
+  renderSubtitle();
+  render();
+})();
+</script>

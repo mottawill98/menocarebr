@@ -1,0 +1,62 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "tracking-worker"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Rota publica de redirect + webhooks do CRM. Ajuste para o dominio real
+# depois de configurar o DNS (ver docs/DEPLOY.md).
+# routes = [
+#   { pattern = "go.usemenocare.com.br/*", custom_domain = true }
+# ]
+
+[observability]
+enabled = true
+
+# Variaveis NAO sensiveis (segredos vao via `wrangler secret put`, nunca aqui).
+[vars]
+META_GRAPH_VERSION = "v21.0"
+ENVIRONMENT = "development"
+ATTRIBUTION_WINDOW_DAYS = "30"
+
+# KV: cache de rotas + numeros, para o redirect nao depender de uma consulta
+# sincrona ao Supabase a cada clique. Crie o namespace com
+# `wrangler kv namespace create ROUTES_KV` e cole o id abaixo.
+[[kv_namespaces]]
+binding = "ROUTES_KV"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_KV_PREVIEW_NAMESPACE_ID"
+
+# Fila de persistencia assincrona dos clicks (nunca no caminho critico do redirect).
+[[queues.producers]]
+queue = "tracking-clicks"
+binding = "CLICKS_QUEUE"
+
+[[queues.consumers]]
+queue = "tracking-clicks"
+max_batch_size = 10
+max_batch_timeout = 5
+max_retries = 5
+dead_letter_queue = "tracking-clicks-dlq"
+
+# Fila de envio para a Meta Conversions API (nunca chamada direto no webhook do CRM).
+[[queues.producers]]
+queue = "tracking-meta-events"
+binding = "META_EVENTS_QUEUE"
+
+[[queues.consumers]]
+queue = "tracking-meta-events"
+max_batch_size = 5
+max_batch_timeout = 10
+max_retries = 5
+dead_letter_queue = "tracking-meta-events-dlq"
+
+# Cron: reconciliacao de pending_lead_bindings (fallback ao caminho orientado
+# a evento), varredura de retry de meta_events com backoff vencido, e limpeza
+# de dados conforme retencao configurada.
+[triggers]
+crons = ["*/5 * * * *"]
+
+[env.staging]
+name = "tracking-worker-staging"
+vars = { META_GRAPH_VERSION = "v21.0", ENVIRONMENT = "staging", ATTRIBUTION_WINDOW_DAYS = "30" }

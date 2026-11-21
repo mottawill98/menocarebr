@@ -1,0 +1,14 @@
+# Copie para `.dev.vars` (git-ignorado) para rodar `wrangler dev` localmente.
+# Em producao, cada uma dessas variaveis vira um `wrangler secret put <NOME>`.
+
+SUPABASE_URL=https://xxxxxxxxxxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=
+META_ACCESS_TOKEN=
+META_DATASET_ID=
+META_TEST_EVENT_CODE=
+CRM_WEBHOOK_SECRET=troque-por-um-segredo-forte
+INTERNAL_API_TOKEN=troque-por-outro-segredo-forte
+
+# Opcional: aponta a CAPI para o mock local (scripts/mocks/meta-capi-mock.ts)
+# em vez de https://graph.facebook.com. NUNCA definir em produção.
+# META_GRAPH_BASE_URL=http://localhost:8790

@@ -1,0 +1,20 @@
+{
+  "name": "@tracking/scripts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "mock:meta-capi": "tsx mocks/meta-capi-mock.ts",
+    "mock:crm": "tsx mocks/crm-webhook-mock.ts",
+    "loadtest": "tsx loadtest/redirect-load-test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tracking/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

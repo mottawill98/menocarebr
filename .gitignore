@@ -50,3 +50,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# tracking-platform (novo monorepo: dashboard + worker + shared) — isolado do
+# app legado na raiz, mas com os mesmos artefatos de build a ignorar
+tracking-platform/node_modules
+tracking-platform/**/node_modules
+tracking-platform/**/.next/
+tracking-platform/**/.turbo/
+tracking-platform/**/.wrangler/
+tracking-platform/**/dist/
+tracking-platform/**/.vercel
+tracking-platform/**/coverage/
+tracking-platform/**/playwright-report/
+tracking-platform/**/test-results/
+tracking-platform/**/.env
+tracking-platform/**/.env.*
+!tracking-platform/**/.env.example
+!tracking-platform/**/.env.local.example
+tracking-platform/**/.dev.vars
+!tracking-platform/**/.dev.vars.example

@@ -38,6 +38,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <Link href="/whatsapp" className="hover:text-ink">
                 WhatsApp
               </Link>
+              <Link href="/leads-roi" className="hover:text-ink">
+                ROI por anúncio
+              </Link>
             </nav>
           </div>
           <Suspense fallback={<div className="h-9 w-64" />}>
